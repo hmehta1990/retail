@@ -3,6 +3,7 @@ package com.leaf.retailer.controller;
 import com.leaf.retailer.model.Employee;
 import com.leaf.retailer.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @Component
-public class EmployeeResource {
+public class EmployeeResource implements ErrorController {
 
+    private static final String PATH = "/error";
     private EmployeeService employeeService;
 
     @Autowired
@@ -33,6 +35,16 @@ public class EmployeeResource {
         } else {
             return employees;
         }
+    }
+
+    @RequestMapping(value = PATH)
+    public String error() {
+        return "Error handling";
+    }
+
+    @Override
+    public String getErrorPath() {
+        return PATH;
     }
 
     @RequestMapping(value = "employee", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -59,7 +71,7 @@ public class EmployeeResource {
 
     }
 
-    @RequestMapping(value = "/employee/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/employee/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteEmployee(@PathVariable Integer id) throws URISyntaxException {
         employeeService.delete(id);
         return ResponseEntity.ok().build();
